@@ -1,0 +1,39 @@
+<launch>
+    <!-- Set use_sim_time true to generate trajectory bag file in same time domain -->
+    <param name="/use_sim_time" value="true"/>
+    
+    <!-- Path of a rosbag file -->
+    <arg name="bag_path" default="$(find path_recorder)/../bag/kitti_2011_09_30_drive_0027_synced"/>
+    
+    <!-- Run A-LOAM -->
+    <group>
+        <param name="scan_line" type="int" value="64" />
+        <param name="mapping_skip_frame" type="int" value="1" />
+        <param name="minimum_range" type="double" value="5"/>
+        
+        <param name="mapping_line_resolution" type="double" value="0.4"/>
+        <param name="mapping_plane_resolution" type="double" value="0.8"/>
+        
+        <node pkg="aloam_velodyne" type="ascanRegistration" name="ascanRegistration" output="log" />
+        <node pkg="aloam_velodyne" type="alaserOdometry" name="alaserOdometry" output="log" />
+        <node pkg="aloam_velodyne" type="alaserMapping" name="alaserMapping" output="log" />
+        <arg name="rviz" default="true" />
+        <group if="$(arg rviz)">
+            <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find aloam_velodyne)/rviz_cfg/aloam_velodyne.rviz" />
+        </group>
+    </group>
+
+
+	<!-- Remap point cloud topic -->
+	<remap from="points_raw" to="velodyne_points" />
+	<!-- Play kitti rosbag file -->
+    <node pkg="rosbag" type="play" name="kitti" args="--clock $(arg bag_path)/kitti.bag" output="log" />
+
+	<!-- Launch path_recorder to save a trajectory from A-LOAM -->	
+    <node pkg="path_recorder" type="path_recorder" name="aloam_recorder" output="screen">
+        <param name="algorithm_name" type="string" value="aloam" />
+        <param name="path_topic" type="string" value="/aft_mapped_path" />
+        <param name="save_to" type="string" value="$(arg bag_path)" />
+    </node>
+</launch>
+

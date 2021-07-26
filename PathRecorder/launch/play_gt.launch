@@ -1,0 +1,11 @@
+<launch>
+    <!-- Path of a rosbag file -->
+    <arg name="bag_path" default="$(find path_recorder)/../bag/kitti_2011_09_30_drive_0027_synced"/>
+    
+    <!-- Tf static publisher for origin of global coordinate -->
+    <node pkg="tf" type="static_transform_publisher" name="map_to_init" args="0 0 0 0 0 0 1 /map /camera_init 100"/>
+    
+    <!-- Play kitti gt trajectory file -->
+    <node pkg="rosbag" type="play" name="gt" args="$(arg bag_path)/kitti_gt.bag" output="log"/>
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find path_recorder)/rviz_cfg/play_gt.rviz" />
+</launch>

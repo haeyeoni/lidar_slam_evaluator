@@ -1,0 +1,37 @@
+<launch>
+    <!-- Set use_sim_time true to generate trajectory bag file in same time domain -->
+    <param name="/use_sim_time" value="true"/>
+    
+    <!-- Path of a rosbag file -->
+    <arg name="bag_path" default="$(find path_recorder)/../bag/kitti_2011_09_30_drive_0027_synced"/>
+    
+    
+    <node pkg="tf" type="static_transform_publisher" name="base_link" args="0 0 0 0 0 0 1 /map /map_to_base 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="map" args="0 0 0 0 0 0 1 /base_link /base_to_map 100"/>
+    
+    <!-- Run LIO-SAM -->
+    <arg name="project" default="lio_sam"/>
+	
+    <!-- Parameters -->
+    <rosparam file="$(find lio_sam)/config/kitti_params.yaml" command="load" />
+    <!--- LOAM -->
+    <include file="$(find lio_sam)/launch/include/module_loam.launch" />
+   	<!--- Robot State TF -->
+   	<include file="$(find lio_sam)/launch/include/module_robot_state_publisher.launch" />
+   	<!--- Run Navsat -->
+   	<include file="$(find lio_sam)/launch/include/module_navsat.launch" />
+    <!--- Run Rviz-->
+    <include file="$(find lio_sam)/launch/include/module_rviz.launch" />
+
+
+
+    <!-- Play kitti rosbag file -->
+    <node pkg="rosbag" type="play" name="kitti" args="--clock $(arg bag_path)/kitti.bag" output="log" />
+    
+    <!-- Launch path_recorder to save a trajectory from LIO-SAM -->
+    <node pkg="path_recorder" type="path_recorder" name="lio_sam_recorder" output="screen">
+        <param name="algorithm_name" type="string" value="lio_sam" />
+        <param name="path_topic" type="string" value="/lio_sam/mapping/path" />
+        <param name="save_to" type="string" value="$(arg bag_path)" />
+    </node>   
+</launch>

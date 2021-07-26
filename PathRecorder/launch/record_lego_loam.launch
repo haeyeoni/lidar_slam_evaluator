@@ -1,0 +1,33 @@
+<launch>
+    <!-- Set use_sim_time true to generate trajectory bag file in same time domain -->
+    <param name="/use_sim_time" value="true" />
+    
+    <!-- Path of a rosbag file -->
+    <arg name="bag_path" default="$(find path_recorder)/../bag/kitti_2011_09_30_drive_0027_synced"/>
+
+	<!-- Run LeGO-LOAM -->
+	<group>
+    	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find lego_loam)/launch/test.rviz" />
+    	
+	    <node pkg="tf" type="static_transform_publisher" name="camera_init_to_map"  args="0 0 0 1.570795   0        1.570795 /map    /camera_init 10" />
+    	<node pkg="tf" type="static_transform_publisher" name="base_link_to_camera" args="0 0 0 -1.570795 -1.570795 0        /camera /base_link   10" />
+
+	    <node pkg="lego_loam" type="imageProjection"    name="imageProjection"    output="screen"/>
+	    <node pkg="lego_loam" type="featureAssociation" name="featureAssociation" output="screen"/>
+	    <node pkg="lego_loam" type="mapOptmization"     name="mapOptmization"     output="screen"/>
+	    <node pkg="lego_loam" type="transformFusion"    name="transformFusion"    output="screen"/>
+    </group>
+
+    <!-- Remap point cloud and imu topic -->
+	<remap from="points_raw" to="velodyne_points" />
+	<remap from="imu_correct" to="imu/data" />
+    <!-- Play kitti rosbag file -->
+    <node pkg="rosbag" type="play" name="kitti" args="--clock $(arg bag_path)/kitti.bag" output="log" />
+
+	<!-- Launch path_recorder to save a trajectory from LeGO-LOAM -->	
+    <node pkg="path_recorder" type="path_recorder" name="lego_loam_recorder" output="screen">
+        <param name="algorithm_name" type="string" value="lego_loam" />
+        <param name="path_topic" type="string" value="/integrated_to_init" />
+        <param name="save_to" type="string" value="$(arg bag_path)" />
+    </node>
+</launch>

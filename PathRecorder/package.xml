@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+    <name>path_recorder</name>
+    <version>1.0.0</version>
+    <description> This is a package for logging path results into rosbag file </description>
+    <maintainer email="dohooncho@gmail.com">dohooncho</maintainer>
+    <license>MIT</license>
+    <author email="dohooncho@gmail.com">dohooncho</author>
+    <buildtool_depend>catkin</buildtool_depend>
+    <build_depend>nav_msgs</build_depend>
+    <build_depend>roscpp</build_depend>
+    <build_depend>rosbag</build_depend>
+    <run_depend>nav_msgs</run_depend>
+    <run_depend>roscpp</run_depend>
+    <run_depend>rosbag</run_depend>
+    <export> </export>
+</package>

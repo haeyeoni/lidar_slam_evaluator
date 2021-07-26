@@ -1,0 +1,6 @@
+[submodule "LeGO-LOAM"]
+	path = LeGO-LOAM
+	url = https://github.com/zzodo/LeGO-LOAM
+[submodule "A-LOAM"]
+	path = A-LOAM
+	url = https://github.com/zzodo/A-LOAM
