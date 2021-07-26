@@ -1,44 +1,18 @@
-# slam_benchmark
-
-**LiDAR SLAM Benchmarks running with KITTI dataset**
-
-## Menu
-
-  - [**Dependency**](#dependency)
-  
-  - [**Install**](#install)
-
-  - [**Requirements**](#requirements)
-  
-  - [**Prepare KITTI dataset**](#prepare-kitti-dataset)
-
-  - [**Compare SLAM Algorithms**](#compare-slam-algorithms)
-
-## Dependency
-
-**1. Python**
-- Python 2.7 or higher (NO PYTHON 3)
-- pykitti
-
-**2. [ROS](http://wiki.ros.org/ROS/Installation)**
-- ros-melodic-desktop
-- rospy
-- cv_bridge
-- navigation
-- robot-localization
-- robot-state-publisher
+# Framework for evaluation of LiDAR SLAM
+This package provides a framework for the comparison and evaluation of trajectory output of the LiDAR SLAM algorithm. We run selected LiDAR SLAM algorithms using the same KITTI Dataset, and plot the resulting trajectory with the ground truth. We provide three different trajectory error graphs.
 
 ## Install
 To run the script, clone this repository at the ROS workspace directory.
 
 ``` sh
+    pip install pykitti
     mkdir -p catkin_ws/src && cd catkin_ws/src
-    git clone --recurse-submodules http://141.223.196.43:8085/HaeyeonGim/slam_benchmark
+    git clone --recurse-submodules http://github.com/haeyeoni/lidar_slam_evaluator.git
     cd ..
     catkin_make
     source devel/setup.sh
 ```
-## Requirements
+## Prepare KITTI Dataset
 
 **KITTI Dataset**
 - KITTI odometry dataset
@@ -151,23 +125,13 @@ python gt2bag.py -o /mnt/HDD/kitti_lidar/dataset -r /mnt/HDD/kitti_raw -s 07 -p 
 Other source files can be found at [KITTI raw data](http://www.cvlibs.net/datasets/kitti/raw_data.php) page.
 
 
-## Compare SLAM Algorithms 
-
-
-    
+## Evaluate SLAM algorithms
 ### Run the script
-Before run the python script, make sure roscore is running.
-```sh
-(new terminal) roscore
-```
 
-To run the script, execute the following command. This script runs SLAM algorithm list one by one and record the result.
-
-
-After finishing running all the algorithms, it shows the plot of results. 
+To run the script, execute the following command. This script runs SLAM algorithm list one by one and record the result. **kitti.bag** and **kitti_gt.bag** file should be exists in BAG FILE DIRECTORY PATH. For LIO-SAM, the package can be downloaded in [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM) original repository. After finishing running all the algorithms, it shows the plot of results. 
 
 ``` python
-python compare.py --slam [SLAM LIST] --bagfile [BAG FILE NAME in PathRecorder/bag directory] -- plot [PLOT OPTION] (--no_play)
+python compare.py --slam [SLAM LIST] --bag_path [BAG FILE DIRECTORY PATH] -- plot [PLOT OPTION] (--no_play)
 ```
 
 - currently available SLAM LIST: lio_sam, aloam, lego_loam
@@ -180,7 +144,7 @@ python compare.py --slam [SLAM LIST] --bagfile [BAG FILE NAME in PathRecorder/ba
 
 Example
 ```python
-python compare.py --slam lego_loam lio_sam aloam --bagfile kitti_2011_09_30_drive_0027_synced --plot all
+python compare.py --slam lego_loam lio_sam aloam --bag_path ../dataset --plot all
 ```
 
 ### Result
