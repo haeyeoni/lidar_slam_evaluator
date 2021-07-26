@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
     Error calculated with the methods described from
-    D. Prokhorov, D. Zhukov, O. Barinova, A. Vorontsova, and A. Konushin, “Measuring robustness of Visual SLAM,”
+    D. Prokhorov, D. Zhukov, O. Barinova, A. Vorontsova, and A. Konushin, "Measuring robustness of Visual SLAM,"
     arXiv:1910.04755 [cs], Oct. 2019, Accessed: Apr. 23, 2021. [Online]. Available: http://arxiv.org/abs/1910.04755
 """
 
