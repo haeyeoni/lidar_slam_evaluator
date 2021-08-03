@@ -13,7 +13,7 @@
     <arg name="project" default="lio_sam"/>
 	
     <!-- Parameters -->
-    <rosparam file="$(find lio_sam)/config/lio_kitti_params.yaml" command="load" />
+    <rosparam file="$(find lio_sam)/config/kitti_params.yaml" command="load" />
     <!--- LOAM -->
     <include file="$(find lio_sam)/launch/include/module_loam.launch" />
    	<!--- Robot State TF -->
@@ -22,8 +22,6 @@
    	<include file="$(find lio_sam)/launch/include/module_navsat.launch" />
     <!--- Run Rviz-->
     <include file="$(find lio_sam)/launch/include/module_rviz.launch" />
-
-
 
     <!-- Play kitti rosbag file -->
     <node pkg="rosbag" type="play" name="kitti" args="--clock $(arg bag_path)/kitti.bag" output="log" />

@@ -62,10 +62,10 @@ if __name__ == "__main__":
                             [0, -1, 0, 0],
                             [0, 0, 0, 1]])
     q_transform = quaternion_from_matrix(R_transform)
-
+    
     print('Conversion starts!')
     for i in tqdm(range(len(kitti_odom.timestamps))):
-        q = q_transform * quaternion_from_matrix(kitti_odom.poses[i])
+        q = quaternion_from_matrix(kitti_odom.poses[i])
         q = q / math.sqrt(q[0] ** 2 + q[1] ** 2 + q[2] ** 2 + q[3] ** 2)
         t = R_transform[:3, :3].dot(kitti_odom.poses[i][:3, 3].reshape(3, 1))
         pose = PoseStamped()
@@ -74,9 +74,9 @@ if __name__ == "__main__":
         pose.pose.position.x = float(t[0])
         pose.pose.position.y = float(t[1])
         pose.pose.position.z = float(t[2])
-        pose.pose.orientation.x = q[0]
-        pose.pose.orientation.y = q[1]
-        pose.pose.orientation.z = q[2]
+        pose.pose.orientation.x = q[2]
+        pose.pose.orientation.y = -q[0]
+        pose.pose.orientation.z = -q[1]
         pose.pose.orientation.w = q[3]
         path.header.stamp = pose.header.stamp
         path.poses.append(pose)

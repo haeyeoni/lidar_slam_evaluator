@@ -45,7 +45,7 @@ void PathRecorder::AloamHandler(const nav_msgs::Path::ConstPtr &path)
     std::unique_lock<std::mutex> lock(path_mtx_);
     path_rcvd_->header.seq = path->header.seq;
     path_rcvd_->header.frame_id = "/map";
-    path_rcvd_->poses.push_back(path->poses.back());
+    path_rcvd_->poses = path->poses;
     updated_ = true;
 }
 
@@ -55,12 +55,19 @@ void PathRecorder::LegoloamHandler(const nav_msgs::Odometry::ConstPtr &odom)
     path_rcvd_->header.seq = odom->header.seq;
     path_rcvd_->header.frame_id = "/map";
 
-    auto pose = ros_conversion::Odom2PoseStamped(*odom);
+	tf::Quaternion q_rot = tf::createQuaternionFromRPY(0, -M_PI / 2, M_PI / 2);
+
     geometry_msgs::PoseStamped pose_lego_loam;
-    pose_lego_loam.header = pose.header;
-    pose_lego_loam.pose.position.x = pose.pose.position.z;
-    pose_lego_loam.pose.position.y = pose.pose.position.x;
-    pose_lego_loam.pose.position.z = pose.pose.position.y;
+    pose_lego_loam.header = odom->header;
+    pose_lego_loam.pose.position.x = odom->pose.pose.position.z;
+    pose_lego_loam.pose.position.y = odom->pose.pose.position.x;
+    pose_lego_loam.pose.position.z = odom->pose.pose.position.y;
+    
+    tf::Quaternion q_orientation, q_orientation_rot;	
+	tf::quaternionMsgToTF(odom->pose.pose.orientation, q_orientation);
+    q_orientation_rot = q_rot * q_orientation;
+    q_orientation_rot.normalize();
+	tf::quaternionTFToMsg(q_orientation_rot, pose_lego_loam.pose.orientation);
     path_rcvd_->poses.push_back(pose_lego_loam);
     updated_ = true;
 }
@@ -71,11 +78,6 @@ void PathRecorder::LiosamHandler(const nav_msgs::Path::ConstPtr &path)
     path_rcvd_->header.seq = path->header.seq;
     path_rcvd_->header.frame_id = "/map";
 
-    geometry_msgs::PoseStamped liosam_pose;
-    liosam_pose.header = path->poses.back().header;
-    liosam_pose.pose.position.x = path->poses.back().pose.position.x;
-    liosam_pose.pose.position.y = path->poses.back().pose.position.y;
-    liosam_pose.pose.position.z = path->poses.back().pose.position.z;
-    path_rcvd_->poses.push_back(liosam_pose);
+    path_rcvd_->poses = path->poses;
     updated_ = true;
 }

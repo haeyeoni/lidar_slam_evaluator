@@ -9,6 +9,7 @@
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
 #include <rosbag/bag.h>
+#include <tf/tf.h>
 
 #include "utility.h"
 
