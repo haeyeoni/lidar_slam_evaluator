@@ -9,7 +9,7 @@ To run the script, clone this repository at the ROS workspace directory.
     mkdir -p catkin_ws/src && cd catkin_ws/src
     git clone --recurse-submodules http://github.com/haeyeoni/lidar_slam_evaluator.git
     cd ..
-    catkin_make
+    catkin_make -j1
     source devel/setup.sh
 ```
 ## Prepare KITTI Dataset
@@ -33,7 +33,7 @@ unzip 2011_09_30_calib.zip
 
 Your filesystem tree should be like this:
 ```bash
-├── KITTI odometry dataset
+├── kitti_odom
 │   └── dataset
 │       ├── poses
 │       └── sequences
@@ -46,23 +46,22 @@ Your filesystem tree should be like this:
 │               ├── velodyne
 │               ├── calib.txt
 │               └── times.txt
-│
-└── KITTI raw dataset
+│   
+└── kitti_raw
     └── dataset
-        ├── 2011_09_26
-        │   ├── 2011_09_26_drive_00**_sync
+        ├── 2011_09_30
+        │   ├── 2011_09_30_drive_0027_sync
         │   │   ├── image_00
         │   │   ├── image_01
         │   │   ├── image_02
         │   │   ├── image_03
         │   │   ├── oxts
         │   │   └── velodyne_points
-        │   ├── 2011_09_26_drive_00**_extract
+        │   ├── 2011_09_26_drive_0027_extract
         │   ├── calib_cam_to_cam.txt 
         │   ├── calib_imu_to_velo.txt
         │   └── calib_velo_to_cam.txt  
         │
-        ├── 2011_09_30
         └── ...
 ```
 
@@ -92,38 +91,48 @@ KITTI odometry data that has ground truth can be downloaded in [KITTI odometry d
 To generate KITTI raw dataset bag file, execute a bash command below:
 
 ```bash
-python kitti2bag.py -t date -r drive -p save_to raw_synced your/dataset/path
+python kitti2bag.py -r raw_dataset_path -p save_path -s sequence
 ```
-where `save_to` is a directory that you want to save a generated bag file and `your/dataset/path` is a base directory for KITTI raw_synced dataset.  
-Replace `date` and `drive` with appropriately syntaxed parameters, such as **2011_09_30** and **0027**, respectively.
+where `save_path` is a directory that you want to save a generated bag file and `raw_dataset_path` is a base directory for KITTI raw_synced dataset.  
+Replace `sequence` with appropriately syntaxed parameters, such as **07**.
 
 Example:
 ```bash
-python kitti2bag.py -t 2011_09_30 -r 0027 -p ../PathRecorder/bag raw_synced /mnt/HDD/kitti_raw
+python kitti2bag.py -r /home/user/kitti_raw/dataset -p ./bag -s 07
 ```
 
 **4. Make KITTI ground truth bag file**
 
 To generate KITTI ground truth bag file, which can be converted from `raw_dataset` and `odom_dataset`, run the python script like:
-
+   
 ```bash
-python gt2bag.py -o odom_path -r raw_path -s sequence -p save_path
+python gt2bag.py -o odom_dataset_path -r raw_dataset_path -s sequence -p save_path
 ```
-
-Replace `odom_path` with your KITTI **odometry** dataset that includes poses.txt for ground truth generation, 
-and `raw_path` with your **raw_unsynced** dataset which has a posix-time timepoints.txt file in it. \
-Then select what sequence that you looking for, and path to save the ground truth bag file. \
-The script will automatically generate the bag file in your pre-made directory.
+   
+Replace `odom_dataset_path` with your KITTI **odometry** dataset that includes poses.txt for ground truth generation, and `raw_dataset_path` with your **raw_unsynced** dataset which has a posix-time timepoints.txt file in it. Then select what sequence that you looking for, and path to save the ground truth bag file. The script will automatically generate the bag file in your directory.   
 
 Example:
 ```bash
-python gt2bag.py -o /mnt/HDD/kitti_lidar/dataset -r /mnt/HDD/kitti_raw -s 07 -p ../PathRecorder/bag
+python gt2bag.py -o /home/user/kitti_odom/dataset -r /home/user/kitti_raw/dataset -s 07 -p ./bag
 ```
+   
+Other source files can be found in [KITTI raw data](http://www.cvlibs.net/datasets/kitti/raw_data.php) page.
+   
+**5. Test your bag file with PathRecorder**
 
-
-
-Other source files can be found at [KITTI raw data](http://www.cvlibs.net/datasets/kitti/raw_data.php) page.
-
+To test the generated bag files, we suggest you to run bundled open source lidar SLAM algorithms with your KITTI bag files. 
+The command below will automatically record a resultant trajectory of the lidar SLAM algorithms.
+   
+Example:
+```bash
+roslaunch path_recorder record_aloam.launch bag_path:=/home/dohoon/catkin_ws/src/lidar_slam_evaluator/bag/kitti_2011_09_30_drive_0027_synced
+```
+   
+After the recording process finished:
+```bash
+roslaunch path_recorder play_aloam.launch bag_path:=/home/dohoon/catkin_ws/src/lidar_slam_evaluator/bag/kitti_2011_09_30_drive_0027_synced
+```
+will show the recorded trajectory.
 
 ## Evaluate SLAM algorithms
 ### Run the script
