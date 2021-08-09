@@ -168,3 +168,16 @@ plots inspired from https://github.com/MichaelGrupp/evo
 <img src="./doc/APE_stat.png" width="400">
 <img src="./doc/RPE.png" width="400">
 <img src="./doc/RPE_stat.png" width="400">
+
+### Citation
+If you use this package in a publication, a link to or citation of this repository would be appreciated:
+* with link: `github.com/haeyeoni/lidar_slam_evaluator`.
+* with BibTex:
+```
+@misc{lidarslamevaluator2021,
+  title={Framework for evaluation of LiDAR SLAM},
+  author={Gim, Haeyeon and Cho, Dohoon and Hong, Junwoo},
+  howpublished={\url{https://github.com/haeyeoni/lidar_slam_evaluator}},
+  year={2021}
+}
+```
