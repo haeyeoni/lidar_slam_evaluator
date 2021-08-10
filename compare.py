@@ -8,34 +8,34 @@ import matplotlib.pyplot as plt
 import src.trajectory as tj
 import src.error as error
 
-slam_possible = {'aloam': 'record_aloam.launch', 
+packages_list = {'aloam': 'record_aloam.launch', 
                  'lego_loam': 'record_lego_loam.launch',
                  'lio_sam': 'record_lio_sam.launch',}
 
-parser = argparse.ArgumentParser(description="LiDAR SLAM Benchmark")
-parser.add_argument('--slam', nargs="+", dest='slam_lists', help='SLAM algorithms that want to compare: aloam, lego_loam, lio_sam')
+parser = argparse.ArgumentParser(description="Lidar SLAM Evaluator")
+parser.add_argument('--slam', nargs="+", dest='slam_packages', help='SLAM algorithms that want to compare: aloam, lego_loam, lio_sam')
 parser.add_argument('--bag_path', dest='bagfile_path', help='Directory path where KITTI dataset bag file "kitti.bag" exists')
 parser.add_argument('--plot', dest='plot_arg', choices=['all', 'traj', 'error', 'stat'], default='all', help='Plot options: all, traj, error, stat')
 parser.add_argument('--no_play', dest='play_flag', action='store_false', help='If you already have recorded result bag file, add --no_play')
 args = parser.parse_args()
 
-if args.slam_lists is None:
+if args.slam_packages is None:
 	print("No specified SLAM Lists. Run default algorithms: ALOAM, LEGO_LOAM, LIO_SAM")
-	args.slam_lists = ["aloam", "lego_loam", "lio_sam"]
+	args.slam_packages = ["aloam", "lego_loam", "lio_sam"]
 
-if 'all' in args.slam_lists:
-    args.slam_lists = ["aloam", "lego_loam", "lio_sam"]
+if 'all' in args.slam_packages:
+    args.slam_packages = ["aloam", "lego_loam", "lio_sam"]
 
-for slam in args.slam_lists:
-    if slam not in slam_possible:
+for slam in args.slam_packages:
+    if slam not in packages_list:
         raise ValueError("%s algorithm is not available!" % slam)
 
 if args.bagfile_path is None:
 	raise parser.error("Please set bag file directory with --bag_path parser")
 
 class CompareSLAM():
-    def __init__(self, slam_lists, bag_path, plot_arg):
-        self.slam_lists = slam_lists
+    def __init__(self, slam_packages, bag_path, plot_arg):
+        self.slam_packages = slam_packages
         self.bag_path = bag_path
         self.bag_file = bag_path + '/kitti.bag'
         bag_info_dict = yaml.load(Bag(self.bag_file, 'r')._get_yaml_info())
@@ -43,15 +43,15 @@ class CompareSLAM():
         self.plot_arg = plot_arg
         self.file_list = []
         self.file_list.append(bag_path + '/kitti_gt.bag')
-        for slam in self.slam_lists:
+        for slam in self.slam_packages:
             self.file_list.append(self.bag_path +'/'+ slam + '_path.bag')
         
     def play_algorithm(self):     
-        for slam in self.slam_lists:            
+        for slam in self.slam_packages:            
             print("%s algorithm is running ..." % slam)
             print("bag file duration: %i" % self.bag_duration)
             print(self.bag_file)
-            p1 = Popen(["roslaunch", "path_recorder", slam_possible[slam], "bag_path:=" + self.bag_path])
+            p1 = Popen(["roslaunch", "path_recorder", packages_list[slam], "bag_path:=" + self.bag_path])
             
             start_time = time.time()
             currnet_time = start_time
@@ -136,7 +136,7 @@ class CompareSLAM():
 
 
 if __name__ == '__main__':
-    compare = CompareSLAM(args.slam_lists, args.bagfile_path, args.plot_arg)
+    compare = CompareSLAM(args.slam_packages, args.bagfile_path, args.plot_arg)
     if args.play_flag:
         compare.play_algorithm()
     else:

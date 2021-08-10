@@ -48,7 +48,7 @@ class Trajectory:
             rot.append(quat.Quaternion([msg.pose.orientation.x, msg.pose.orientation.y,
                                         msg.pose.orientation.z, msg.pose.orientation.w]))
             time.append((msg.header.stamp - poses[0].header.stamp).to_nsec())
-        return traj, rot, topic, time, bag.get_message_count()
+        return traj, rot, topic, time, len(poses)
 
     def pose_matrix(self, index):
         return np.vstack([np.hstack([self.orientation[index].rotation(), self.trajectory[index].reshape(3, 1)]),
