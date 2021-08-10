@@ -1,40 +1,92 @@
-# Framework for evaluation of LiDAR SLAM
-This package provides a framework for the comparison and evaluation of trajectory output of the LiDAR SLAM algorithm. We run selected LiDAR SLAM algorithms using the same KITTI Dataset, and plot the resulting trajectory with the ground truth. We provide three different trajectory error graphs.
+# A framework for Lidar SLAM algorithm evaluation
+This package provides a framework for both comparison and evaluation of resultant trajectories that generated from [ROS](https://www.ros.org/) supported Lidar SLAM packages. The framework provides an interface between [KITTI dataset](http://www.cvlibs.net/datasets/kitti/index.php) and Lidar SLAM packages including [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM), [LeGO-LOAM](https://github.com/RobustFieldAutonomyLab/LeGO-LOAM) and [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM) for localization accuracy evaluation.   
+
+~~Other Lidar odometry/SLAM packages and even your own Lidar SLAM package can be applied to this evaluation package.(TBD)~~
+
+Using this package, you can record the trajectory from Lidar SLAM packages by given roslaunch files and compare each other qualitatively, or with ground truth provided by KITTI dataset for the quantative evaluation. After the evaluation process, our Python script automatically generates plots and graphs that demostrates error metrics.
+   
+For detailed intruction, we strongly recommend to read the further step-by-step illustration of the framework.
 
 <p align='center'>
     <img src="./assets/doc/demo.gif" alt="drawing" width="800"/>
 </p>
 
-## Install
-To run the script, clone this repository at the ROS workspace directory.
+---
 
-``` sh
-    pip install pykitti
+## 1. Install this package
+Installing this package into your local machine is simple. Clone this repository to your catkin workspace.
+   
+``` bash
+    pip install pykitti (if pykitti is not installed)
     mkdir -p catkin_ws/src && cd catkin_ws/src
-    git clone --recurse-submodules http://github.com/haeyeoni/lidar_slam_evaluator.git
+    git clone http://github.com/haeyeoni/lidar_slam_evaluator.git
     cd ..
-    catkin_make -j1
+    catkin_make -j1 
     source devel/setup.sh
 ```
-## Prepare KITTI Dataset
+   
+-j1 flag on line 5 is for LeGO-LOAM build. Refer to this [instruction](https://github.com/RobustFieldAutonomyLab/LeGO-LOAM#compile).
+   
+---
+   
+## 2. Install Lidar odometry/SLAM packages
+The evaluation package currently support three open-source Lidar-based odometry/SLAM algorithms:   
+- [A-LOAM](https://github.com/HKUST-Aerial-Robotics/A-LOAM)   
+- [LeGO-LOAM](https://github.com/RobustFieldAutonomyLab/LeGO-LOAM)   
+- [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM)   
+   
+Go to the link and follow the instructions written by owner. You may consider changing some parameters for KITTI dataset which used Velodyne HDL-64 Lidar for data acquisition.
 
-**KITTI Dataset**
+**Note**   
+- A-LOAM: No need to modify parameter. It is already written for KITTI configurations.   
+- LeGO-LOAM: Add Velodyne HDL-64 configuration and disable undistortion functions, or clone this [forked repo](https://github.com/zzodo/LeGO-LOAM).   
+- LIO-SAM: Change package parameters for KITTI, or clone this [forked repo]().   
+   
+---
+   
+## 3. Prepare KITTI dataset in your machine
+
+**What you need?**
 - KITTI odometry dataset
 - KITTI raw_synced dataset
 - KITTI raw_unsynced dataset
 
-## Prepare KITTI dataset
-**1. Download Raw Dataset**
+### 3-1. Download KITTI raw_synced/raw_unsynced dataset
 ```bash
 cd your/dataset/path
-wget https://s3.eu-central-1.amazonaws.com/avg-kitti/raw_data/2011_09_30_drive_0027/2011_09_30_drive_0027_sync.zip
-wget https://s3.eu-central-1.amazonaws.com/avg-kitti/raw_data/2011_09_30_drive_0027/2011_09_30_drive_0027_extract.zip
+wget https://s3.eu-central-1.amazonaws.com/avg-kitti/raw_data/2011_09_30_drive_0027/2011_09_30_drive_0027_sync.zip (raw_synced)
+wget https://s3.eu-central-1.amazonaws.com/avg-kitti/raw_data/2011_09_30_drive_0027/2011_09_30_drive_0027_extract.zip (raw_unsynced)
 wget https://s3.eu-central-1.amazonaws.com/avg-kitti/raw_data/2011_09_30_calib.zip
 unzip 2011_09_30_drive_0027_sync.zip
 unzip 2011_09_30_drive_0027_extract.zip
 unzip 2011_09_30_calib.zip
 ```
+   
+Other source files can be found in [KITTI raw data](http://www.cvlibs.net/datasets/kitti/raw_data.php) page.   
+   
+### 3-2. Download odometry dataset (with ground truth)
+   
+KITTI odometry data that has ground truth can be downloaded in [KITTI odometry data](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) page. (velodyne laser data, calibration files, ground truth poses data are required.)
+   
+**Note**   
+If you want to evaluate your algorithm on KITTI raw dataset with ground truth provided by KITTI odometry poses, you can convert poses.txt file into the rosbag format that produces *nav_msgs::Path* topic. In the case you would like to use IMU data, however, the *rectified_synced* dataset for KITTI raw dataset is required. The table below lists corresponding KITTI sequences to rectified_synced dataset with starting/end index in each sequences.
 
+| seq | name | start | end |
+| :------------ | :------------ | :------------ | :------------ |
+| 00 | 2011_10_03_drive_0027 | 000000 | 004540 |
+| 01 | 2011_10_03_drive_0042 | 000000 | 001100 |
+| 02 | 2011_10_03_drive_0034 | 000000 | 004660 |
+| 03 | 2011_09_26_drive_0067 | 000000 | 000800 |
+| 04 | 2011_09_30_drive_0016 | 000000 | 000270 |
+| 05 | 2011_09_30_drive_0018 | 000000 | 002760 |
+| 06 | 2011_09_30_drive_0020 | 000000 | 001100 |
+| 07 | 2011_09_30_drive_0027 | 000000 | 001100 |
+| 08 | 2011_09_30_drive_0028 | 001100 | 005170 |
+| 09 | 2011_09_30_drive_0033 | 000000 | 001590 |
+| 10 | 2011_09_30_drive_0034 | 000000 | 001200 |
+   
+
+### 3-3. Check
 Your filesystem tree should be like this:
 ```bash
 ├── kitti_odom
@@ -69,111 +121,105 @@ Your filesystem tree should be like this:
         └── ...
 ```
 
-**2. Download Odometry Dataset (with Ground Truth)**
-
-If you want to evaluate your algorithm on KITTI raw dataset with ground truth provided by KITTI odometry poses, you can convert poses.txt file into the rosbag format that produces *nav_msgs::Path* topic. In the case you would like to use IMU data, however, the *rectified_synced* dataset for KITTI raw dataset is required. The table below lists corresponding KITTI sequences to rectified_synced dataset with starting/end index in each sequences.
-
-| seq | name | start | end |
-| :------------ | :------------ | :------------ | :------------ |
-| 00 | 2011_10_03_drive_0027 | 000000 | 004540 |
-| 01 | 2011_10_03_drive_0042 | 000000 | 001100 |
-| 02 | 2011_10_03_drive_0034 | 000000 | 004660 |
-| 03 | 2011_09_26_drive_0067 | 000000 | 000800 |
-| 04 | 2011_09_30_drive_0016 | 000000 | 000270 |
-| 05 | 2011_09_30_drive_0018 | 000000 | 002760 |
-| 06 | 2011_09_30_drive_0020 | 000000 | 001100 |
-| 07 | 2011_09_30_drive_0027 | 000000 | 001100 |
-| 08 | 2011_09_30_drive_0028 | 001100 | 005170 |
-| 09 | 2011_09_30_drive_0033 | 000000 | 001590 |
-| 10 | 2011_09_30_drive_0034 | 000000 | 001200 |
-
-
-KITTI odometry data that has ground truth can be downloaded in [KITTI odometry data](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) page. (velodyne laser data, calibration files, ground truth poses data are needed.)
-
-
-**3. Make KITTI dataset bag file**
-To generate KITTI raw dataset bag file, execute a bash command below:
-
+---   
+   
+## 4. Convert KITTI dataset to rosbag file (kitti2bag.py)
+If the package is successfullt setup on your environment, you can generate KITTI dataset rosbag file that contains raw point clouds and imu measurement.   
+Try below on your command line.
+   
 ```bash
 python kitti2bag.py -r raw_dataset_path -p save_path -s sequence
 ```
-where `save_path` is a directory that you want to save a generated bag file and `raw_dataset_path` is a base directory for KITTI raw_synced dataset.  
-Replace `sequence` with appropriately syntaxed parameters, such as **07**.
 
-Example:
+**Note**
+- `save_path` is a directory that you want to save a generated bag file
+- `raw_dataset_path` is a base directory for KITTI raw_synced dataset  
+- Replace `sequence` with appropriately syntaxed parameters, such as **07**.
+
+**Example:**
 ```bash
 python kitti2bag.py -r /home/user/kitti_raw/dataset -p ./bag -s 07
 ```
-
-**4. Make KITTI ground truth bag file**
-
-To generate KITTI ground truth bag file, which can be converted from `raw_dataset` and `odom_dataset`, run the python script like:
    
+---   
+   
+## 5. Generate KITTI ground truth rosbag file (gt2bag.py)
+You may need ground truth for quantative analysis of the Lidar-based SLAM algorithms.   
+To generate KITTI ground truth rosbag file, which can be converted from `raw_dataset` and `odom_dataset`, run the python script like this,   
 ```bash
 python gt2bag.py -o odom_dataset_path -r raw_dataset_path -s sequence -p save_path
 ```
    
-Replace `odom_dataset_path` with your KITTI **odometry** dataset that includes poses.txt for ground truth generation, and `raw_dataset_path` with your **raw_unsynced** dataset which has a posix-time timepoints.txt file in it. Then select what sequence that you looking for, and path to save the ground truth bag file. The script will automatically generate the bag file in your directory.   
+**Note**
+- Replace `odom_dataset_path` with your KITTI **odometry** dataset that includes poses.txt for ground truth generation
+- Replace `raw_dataset_path` with your **raw_unsynced** dataset which has a posix-time timepoints.txt file in it 
+- Then select what sequence that you looking for, and path to save the ground truth bag file. 
+- The script will automatically generate the bag file in your directory.   
 
-Example:
+**Example:**
 ```bash
 python gt2bag.py -o /home/user/kitti_odom/dataset -r /home/user/kitti_raw/dataset -s 07 -p ./bag
 ```
    
-Other source files can be found in [KITTI raw data](http://www.cvlibs.net/datasets/kitti/raw_data.php) page.
+---   
    
-**5. Test your bag file with PathRecorder**
-
-To test the generated bag files, we suggest you to run bundled open source lidar SLAM algorithms with your KITTI bag files. 
-The command below will automatically record a resultant trajectory of the lidar SLAM algorithms.
+## 6. Test your rosbag file with PathRecorder
+For testing the generated rosbag files, we recommend to use our **PathRecorder** rospackage for recording the trajectory.
+The command below will automatically record a result of the lidar SLAM packages.
    
-Example:
+**Example:**   
 ```bash
 roslaunch path_recorder record_aloam.launch bag_path:=/home/dohoon/catkin_ws/src/lidar_slam_evaluator/bag/kitti_2011_09_30_drive_0027_synced
 ```
    
-After the recording process finished:
+**For visualization:**   
 ```bash
 roslaunch path_recorder play_aloam.launch bag_path:=/home/dohoon/catkin_ws/src/lidar_slam_evaluator/bag/kitti_2011_09_30_drive_0027_synced
 ```
-will show the recorded trajectory.
-
-## Evaluate SLAM algorithms
-### Run the script
-
-To run the script, execute the following command. This script runs SLAM algorithm list one by one and record the result. **kitti.bag** and **kitti_gt.bag** file should be exists in BAG FILE DIRECTORY PATH. For LIO-SAM, the package can be downloaded in [LIO-SAM](https://github.com/TixiaoShan/LIO-SAM) original repository. After finishing running all the algorithms, it shows the plot of results. 
+   
+---   
+   
+## 7. Run evaluation Python script (compare.py)
+Finally, you can analyze the trajectory-recorded rosbag files!
 
 ``` python
-python compare.py --slam [SLAM LIST] --bag_path [BAG FILE DIRECTORY PATH] -- plot [PLOT OPTION] (--no_play)
+python compare.py --slam slam_packages --bag_path rosbag_path -- plot plot_option (--no_play)
 ```
 
-- currently available SLAM LIST: lio_sam, aloam, lego_loam
-- Available plotting option
-    * `all`   - plot all trajectories and errors and error statistics **default**
+**Note**   
+- **slam_packages**: lio_sam, aloam, lego_loam
+- Available **plot_option**:
+    * `all`   - plot all trajectories and errors and error statistics (default)
     * `traj`  - plot trajectories
     * `error` - plot errors
     * `stat`  - plot error statistics
-- If you already have recorded result bag file, add --no_play
+- **--no_play** option is for the case you already generated rosbag trajectory results.
 
-Example
+**Example:**   
 ```python
 python compare.py --slam lego_loam lio_sam aloam --bag_path ../dataset --plot all
 ```
-
-### Result
-plots inspired from https://github.com/MichaelGrupp/evo  
-**Trajectory**  
+   
+---   
+   
+## 8. Anticipated result
+This plotting design is inspired from [evo](https://github.com/MichaelGrupp/evo).   
+   
+**Trajectory:**    
 <img src="./assets/doc/top_view.png" width="400">
 <img src="./assets/doc/3D.png" width="400">
 <img src="./assets/doc/xyz.png" width="400">  
-**Error** calculated based on paper ['Measuring robustness of Visual SLAM'] (http://arxiv.org/abs/1910.04755 "D. Prokhorov, D. Zhukov, O. Barinova, K. Anton and A. Vorontsova, *Measuring robustness of Visual SLAM,* 2019 16th International Conference on Machine Vision Applications (MVA), 2019, pp. 1-6, doi: 10.23919/MVA.2019.8758020.")  
+
+**Error:**  
 <img src="./assets/doc/summary.png" width="400">  
 <img src="./assets/doc/APE.png" width="400">
 <img src="./assets/doc/APE_stat.png" width="400">
 <img src="./assets/doc/RPE.png" width="400">
 <img src="./assets/doc/RPE_stat.png" width="400">
-
-### Citation
+   
+---   
+   
+## Cite this work
 If you use this package in a publication, a link to or citation of this repository would be appreciated:
 * with link: `github.com/haeyeoni/lidar_slam_evaluator`.
 * with BibTex:
