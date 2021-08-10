@@ -215,7 +215,9 @@ This plotting design is inspired from [evo](https://github.com/MichaelGrupp/evo)
 <img src="./assets/doc/APE.png" width="400">
 <img src="./assets/doc/APE_stat.png" width="400">
 <img src="./assets/doc/RPE.png" width="400">
-<img src="./assets/doc/RPE_stat.png" width="400">
+<img src="./assets/doc/RPE_stat.png" width="400">   
+
+For detailed definition of error metrics, please refer to [this tutorial](https://ieeexplore.ieee.org/abstract/document/8593941).
    
 ---   
    
