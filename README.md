@@ -40,7 +40,7 @@ Go to the link and follow the instructions written by owner. You may consider ch
 **Note**   
 - A-LOAM: No need to modify parameter. It is already written for KITTI configurations.   
 - LeGO-LOAM: Add Velodyne HDL-64 configuration and disable undistortion functions, or clone this [forked repo](https://github.com/zzodo/LeGO-LOAM).   
-- LIO-SAM: Change package parameters for KITTI, or clone this [forked repo]().   
+- LIO-SAM: Change package parameters for KITTI, or clone this [forked repo](https://github.com/zzodo/LIO-SAM).   
    
 ---
    
