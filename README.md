@@ -227,7 +227,7 @@ If you use this package in a publication, a link to or citation of this reposito
 * with BibTex:
 ```
 @misc{lidarslamevaluator2021,
-  title={Framework for evaluation of LiDAR SLAM},
+  title={A framework for Lidar SLAM algorithm evaluation},
   author={Gim, Haeyeon and Cho, Dohoon and Hong, Junwoo},
   howpublished={\url{https://github.com/haeyeoni/lidar_slam_evaluator}},
   year={2021}
