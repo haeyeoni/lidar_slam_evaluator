@@ -25,7 +25,7 @@ Installing this package into your local machine is simple. Clone this repository
     source devel/setup.sh
 ```
    
--j1 flag on line 5 is for LeGO-LOAM build. Refer to this [instruction](https://github.com/RobustFieldAutonomyLab/LeGO-LOAM#compile).
+`-j1` flag on line 5 is for LeGO-LOAM build. Refer to this [instruction](https://github.com/RobustFieldAutonomyLab/LeGO-LOAM#compile).
    
 ---
    
@@ -69,7 +69,7 @@ Other source files can be found in [KITTI raw data](http://www.cvlibs.net/datase
 KITTI odometry data that has ground truth can be downloaded in [KITTI odometry data](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) page. (velodyne laser data, calibration files, ground truth poses data are required.)
    
 **Note**   
-If you want to evaluate your algorithm on KITTI raw dataset with ground truth provided by KITTI odometry poses, you can convert poses.txt file into the rosbag format that produces *nav_msgs::Path* topic. In the case you would like to use IMU data, however, the *rectified_synced* dataset for KITTI raw dataset is required. The table below lists corresponding KITTI sequences to rectified_synced dataset with starting/end index in each sequences.
+If you want to evaluate your algorithm on KITTI raw dataset with ground truth provided by KITTI odometry poses, you can convert poses.txt file into the rosbag format that produces `nav_msgs::Path` topic. In the case you would like to use IMU data, however, the `rectified_synced` dataset for KITTI raw dataset is required. The table below lists corresponding KITTI sequences to rectified_synced dataset with starting/end index in each sequences.
 
 | seq | name | start | end |
 | :------------ | :------------ | :------------ | :------------ |
@@ -151,8 +151,8 @@ python gt2bag.py -o odom_dataset_path -r raw_dataset_path -s sequence -p save_pa
 ```
    
 **Note**
-- Replace `odom_dataset_path` with your KITTI **odometry** dataset that includes poses.txt for ground truth generation
-- Replace `raw_dataset_path` with your **raw_unsynced** dataset which has a posix-time timepoints.txt file in it 
+- Replace `odom_dataset_path` with your KITTI `odometry` dataset that includes poses.txt for ground truth generation
+- Replace `raw_dataset_path` with your `raw_unsynced` dataset which has a posix-time timepoints.txt file in it 
 - Then select what sequence that you looking for, and path to save the ground truth bag file. 
 - The script will automatically generate the bag file in your directory.   
 
@@ -187,13 +187,13 @@ python compare.py --slam slam_packages --bag_path rosbag_path -- plot plot_optio
 ```
 
 **Note**   
-- **slam_packages**: lio_sam, aloam, lego_loam
-- Available **plot_option**:
+- `slam_packages`: aloam, lego_loam, lio_sam
+- Available `plot_option`:
     * `all`   - plot all trajectories and errors and error statistics (default)
     * `traj`  - plot trajectories
     * `error` - plot errors
     * `stat`  - plot error statistics
-- **--no_play** option is for the case you already generated rosbag trajectory results.
+- `--no_play` option is for the case you already generated rosbag trajectory results.
 
 **Example:**   
 ```python
@@ -223,7 +223,7 @@ For detailed definition of error metrics, please refer to [this tutorial](https:
    
 ## Cite this work
 If you use this package in a publication, a link to or citation of this repository would be appreciated:
-* with link: `github.com/haeyeoni/lidar_slam_evaluator`.
+* with link: **github.com/haeyeoni/lidar_slam_evaluator**.
 * with BibTex:
 ```
 @misc{lidarslamevaluator2021,
