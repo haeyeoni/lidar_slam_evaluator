@@ -1,6 +1,10 @@
 # Framework for evaluation of LiDAR SLAM
 This package provides a framework for the comparison and evaluation of trajectory output of the LiDAR SLAM algorithm. We run selected LiDAR SLAM algorithms using the same KITTI Dataset, and plot the resulting trajectory with the ground truth. We provide three different trajectory error graphs.
 
+<p align='center'>
+    <img src="./assets/doc/demo.gif" alt="drawing" width="800"/>
+</p>
+
 ## Install
 To run the script, clone this repository at the ROS workspace directory.
 
@@ -159,15 +163,15 @@ python compare.py --slam lego_loam lio_sam aloam --bag_path ../dataset --plot al
 ### Result
 plots inspired from https://github.com/MichaelGrupp/evo  
 **Trajectory**  
-<img src="./doc/top_view.png" width="400">
-<img src="./doc/3D.png" width="400">
-<img src="./doc/xyz.png" width="400">  
+<img src="./assets/doc/top_view.png" width="400">
+<img src="./assets/doc/3D.png" width="400">
+<img src="./assets/doc/xyz.png" width="400">  
 **Error** calculated based on paper ['Measuring robustness of Visual SLAM'] (http://arxiv.org/abs/1910.04755 "D. Prokhorov, D. Zhukov, O. Barinova, K. Anton and A. Vorontsova, *Measuring robustness of Visual SLAM,* 2019 16th International Conference on Machine Vision Applications (MVA), 2019, pp. 1-6, doi: 10.23919/MVA.2019.8758020.")  
-<img src="./doc/summary.png" width="400">  
-<img src="./doc/APE.png" width="400">
-<img src="./doc/APE_stat.png" width="400">
-<img src="./doc/RPE.png" width="400">
-<img src="./doc/RPE_stat.png" width="400">
+<img src="./assets/doc/summary.png" width="400">  
+<img src="./assets/doc/APE.png" width="400">
+<img src="./assets/doc/APE_stat.png" width="400">
+<img src="./assets/doc/RPE.png" width="400">
+<img src="./assets/doc/RPE_stat.png" width="400">
 
 ### Citation
 If you use this package in a publication, a link to or citation of this repository would be appreciated:
